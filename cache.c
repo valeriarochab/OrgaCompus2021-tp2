@@ -19,7 +19,7 @@ unsigned int get_offset(unsigned int address) {
 
 char get_miss_rate(){
     if (cache.access_counter == 0) {
-        return "0";
+        return 0;
     }
-    return (char) cache.miss_counter / cache.access_counter;
+    return 100 * cache.miss_counter / cache.access_counter;
 }
