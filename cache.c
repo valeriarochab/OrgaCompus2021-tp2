@@ -1,12 +1,24 @@
 #include "cacheParams.h"
+#include "cache.h"
+
+cache_t cache;
 
 unsigned int find_set(int address) {
     unsigned int mba = address / cache_params.block_size;
     return mba % cache_params.sets_amount;
 }
 
-unsigned int find_set_by_blocknum(unsigned int blocknum){
+unsigned int find_set_by_blocknum(unsigned int blocknum) {
     return blocknum / cache_params.sets_amount;
+}
+
+unsigned int find_earliest(int setnum) {
+    set_t set = cache.sets[setnum];
+    unsigned int earliest = 0;
+    for (unsigned int i = 1; i < cache_params.ways; ++i) {
+        earliest = set.ways[earliest].old < set.ways[i].old ? i : earliest;
+    }
+    return earliest;
 }
 
 unsigned int get_tag(unsigned int address) {
@@ -17,7 +29,7 @@ unsigned int get_offset(unsigned int address) {
     return address % cache_params.block_size;
 }
 
-char get_miss_rate(){
+char get_miss_rate() {
     if (cache.access_counter == 0) {
         return 0;
     }
