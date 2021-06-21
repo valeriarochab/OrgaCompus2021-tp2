@@ -3,6 +3,10 @@
 #include "addressHelper.h"
 #include "executor.h"
 
+void init(filewriter_t *fileWriter) {
+    filewriter_write_char(fileWriter, "Cache inicializada", 1);
+    cache_init();
+}
 
 void executor_execute(command_t *command, filewriter_t *fileWriter) {
     char *hit = NULL;
@@ -22,10 +26,6 @@ void executor_execute(command_t *command, filewriter_t *fileWriter) {
             break;
     }
 
-    void init(filewriter_t *fileWriter) {
-        filewriter_write_char(fileWriter, "Cache inicializada", 1);
-        cache_init();
-    }
 
     char cache_get_miss_rate() {
         return get_miss_rate();
@@ -35,3 +35,8 @@ void executor_execute(command_t *command, filewriter_t *fileWriter) {
 char read_byte(int address, char *hit) {
     return 0; //TODO
 }
+
+char write_byte(int address, char value, char *hit) {
+    return 0; //TODO
+}
+

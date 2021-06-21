@@ -42,6 +42,7 @@ int is_valid_file(FILE *fp) {
     return size;
 }
 
+
 unsigned int custom_log(unsigned int x, int base) {
     return log(x) / log(base);
 }
