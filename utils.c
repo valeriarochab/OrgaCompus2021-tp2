@@ -1,7 +1,8 @@
-#include "utils.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+#include "utils.h"
 
 #define VERSION "0.0.1"
 
@@ -39,4 +40,8 @@ int is_valid_file(FILE *fp) {
         rewind(fp);
     }
     return size;
+}
+
+unsigned int custom_log(unsigned int x, int base) {
+    return log(x) / log(base);
 }

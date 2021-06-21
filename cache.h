@@ -1,6 +1,12 @@
 #ifndef CACHE_H
 #define CACHE_H
 #include "set.h"
+#include "utils.h"
+#include "addressHelper.h"
+#include "cacheParams.h"
+#include "stdio.h"
+#include "stdlib.h"
+
 
 typedef struct cache {
     int miss_counter;
@@ -9,14 +15,14 @@ typedef struct cache {
     set_t *sets;
 }cache_t;
 
-unsigned int find_set(int address);
-unsigned int find_set_by_blocknum(unsigned int blocknum);
-unsigned int get_tag(unsigned int address);
-unsigned int get_offset(unsigned int address);
+
+int cache_create(unsigned int cache_size, unsigned int ways, unsigned int block_size);
+void cache_init();
 unsigned int find_earliest(int setnum);
 void read_block(int blocknum);
 char read_byte(int address, char *hit);
 char write_byte(int address, char value, char *hit);
 char get_miss_rate();
+void cache_destroy();
 
 #endif

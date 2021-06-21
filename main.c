@@ -5,13 +5,27 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <limits.h>
+#include "fileReader.h"
+#include "fileWriter.h"
+#include "mainMemory.h"
+#include "cache.h"
+#include "parser.h"
+#include "executor.h"
+#include "utils.h"
 
+
+int create_success(unsigned int cache_size, unsigned int ways, unsigned int block_size){
+    if (main_memory_create() != 0 || cache_create(cache_size, ways, block_size) != 0) {
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
+}
 
 int main(int argc, char *argv[]) {
     int option = 0;
     int must_return = 0;
     char prefix[50] = {0};
-    char *output = NULL;
+    char *output_option = NULL;
     unsigned int ways;
     unsigned int cache_size;
     unsigned int block_size;
@@ -68,10 +82,48 @@ int main(int argc, char *argv[]) {
        return EXIT_FAILURE;
     }
 
-    if (output == NULL) {
-        output = "stdout";
+    if (output_option == NULL) {
+        output_option = "stdout";
     }
 
+    filewriter_t output_file;
+    filewriter_create(&output_file, output_option);
+    FILE *fp;
+    fp = fopen(argv[optind++], "r");
+    if (fp == NULL)
+        return EXIT_FAILURE;
+
+    filereader_t file;
+    filereader_create(&file, fp);
+
+    if (create_success(cache_size, ways, block_size) != 0) {
+        filereader_destroy(&file);
+        return EXIT_FAILURE;
+    }
+
+    char *line = NULL;
+    while (filereader_next_line(&file, &line) != -1) {
+        if(empty_line(line) == 1) {
+            continue;
+        }
+        if (line[strlen(line) - 1] == '\n') {
+            line[strlen(line) - 1] = '\0';
+        }
+
+        filewriter_write_char(&output_file, "Comando leído: ", 0);
+        filewriter_write_char(&output_file, line, 1);
+
+        command_t command;
+        if (command_create(&command, line) != 0) {
+            filewriter_write_char(&output_file, "Comando inválido.", 1);
+            continue;
+        }
+        executor_execute(&command, &output_file);
+        command_destroy(&command);
+}
+    cache_destroy();
+    main_memory_destroy();
+    filereader_destroy(&file);
 
     return EXIT_SUCCESS;
 }
