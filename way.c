@@ -21,8 +21,9 @@ void way_read_block(way_t *self, int blocknum) {
     self->tag = get_tag_by_blocknum(blocknum);
     self->old = 0;
 
+    unsigned int blockaddr = blocknum * cache_params.block_size;
     for (int i = 0; i < cache_params.block_size; ++i) {
-        self->block[i] = main_memory_read(blocknum * cache_params.block_size + i);
+        self->block[i] = main_memory_read(blockaddr + i);
     }
 }
 
