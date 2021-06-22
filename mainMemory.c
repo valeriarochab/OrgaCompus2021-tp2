@@ -9,12 +9,16 @@ main_memory_t memory;
 #define MEMORY_SIZE 65536
 
 int main_memory_create() {
-    unsigned char* memory_table = calloc(MEMORY_SIZE, sizeof(unsigned char));
-    if (memory_table == NULL) {
-        return -1;
+    unsigned char*  mainMemory = calloc(MEMORY_SIZE, sizeof(char));
+    if (mainMemory == NULL) {
+        return EXIT_FAILURE;
     }
-    memory.mainMemory = memory_table;
-    return 0;
+    memory.mainMemory = mainMemory;
+    return EXIT_SUCCESS;
+}
+
+void main_memory_write_toMem(char value, int address) {
+    memory.mainMemory[address] = value;
 }
 
 void main_memory_destroy() {

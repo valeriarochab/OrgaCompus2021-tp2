@@ -5,7 +5,7 @@ cache_t cache;
 int cache_create(unsigned int cache_size, unsigned int ways, unsigned int block_size) {
     cache.miss_counter = 0;
     cache.access_counter = 0;
-    unsigned int blocks_number = (cache_size * 1024) / block_size;
+    unsigned int blocks_number = (cache_size * KB_CONSTANT) / block_size;
     unsigned int sets_amount = blocks_number / ways;
     cache_params.block_size = block_size;
     cache_params.ways = ways;
@@ -13,7 +13,7 @@ int cache_create(unsigned int cache_size, unsigned int ways, unsigned int block_
 
     unsigned int bits_offset = custom_log(block_size, 2);
     unsigned int bits_index = custom_log(sets_amount, 2);
-    unsigned int bits_tag = 16 - bits_index - bits_offset;
+    unsigned int bits_tag = SPACE_ADDRESS - bits_index - bits_offset;
     cache_params.bits_tag = bits_tag;
 
     cache.sets = malloc(sets_amount * sizeof(set_t));
@@ -52,4 +52,14 @@ void cache_destroy() {
         set_destroy(&cache.sets[i]);
     }
     free(cache.sets);
+}
+
+char cache_write_byte(unsigned int address, char value) {
+    cache.access_counter++;
+    unsigned int set_number = find_set(address);
+    if (set_write_byte(&cache.sets[set_number], address, value) != 0) {
+        cache.miss_counter++;
+        return -1;
+    }
+    return 0;
 }

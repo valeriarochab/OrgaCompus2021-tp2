@@ -2,7 +2,7 @@
 #include "cacheParams.h"
 
 unsigned int get_tag(unsigned int address) {
-    return address >> (16 - cache_params.bits_tag);
+    return address >> (SPACE_ADDRESS - cache_params.bits_tag);
 }
 
 unsigned int get_offset(unsigned int address) {

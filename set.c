@@ -21,3 +21,14 @@ void set_destroy(set_t* self) {
     }
     free(self->ways);
 }
+
+int set_write_byte(set_t *self, int address, char value) {
+    unsigned int tag = get_tag(address);
+    for (int i = 0; i < cache_params.ways; ++i) {
+        if (self->ways[i].valid == 1 && self->ways[i].tag == tag) {
+            way_write_byte(&self->ways[i], get_offset(address), value);
+            return 0;
+        }
+    }
+    return -1;
+}

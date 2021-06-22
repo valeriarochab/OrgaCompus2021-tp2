@@ -15,7 +15,7 @@
 
 
 int create_success(unsigned int cache_size, unsigned int ways, unsigned int block_size){
-    if (main_memory_create() != 0 || cache_create(cache_size, ways, block_size) != 0) {
+    if (main_memory_create() == EXIT_FAILURE || cache_create(cache_size, ways, block_size) == EXIT_FAILURE) {
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
@@ -49,11 +49,11 @@ int main(int argc, char *argv[]) {
         switch (option) {
             case 'V':
                 show_version();
-                must_return = 1;
+                return EXIT_SUCCESS;
                 break;
             case 'h':
                 show_help();
-                must_return = 1;
+                return EXIT_SUCCESS;
                 break;
             case 'o':
                 strncpy(prefix, optarg, strlen(optarg));
@@ -63,11 +63,9 @@ int main(int argc, char *argv[]) {
                 break;
             case 'c':
                 cache_size = strtol(optarg, NULL, 10);
-                must_return = 1;
                 break;
             case 'b':
                 block_size = strtol(optarg, NULL, 10);
-                must_return = 1;
                 break;
             case '?':
                 must_return = 1;
@@ -78,12 +76,16 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    if (must_return || (cache_size * 1024) < block_size ) {
+    if (must_return || (optind + 1 != argc) || (cache_size * 1024) < block_size ) {
        return EXIT_FAILURE;
     }
 
     if (output_option == NULL) {
         output_option = "stdout";
+    }
+
+    if (create_success(cache_size, ways, block_size) != 0) {
+        return EXIT_FAILURE;
     }
 
     filewriter_t output_file;
@@ -95,11 +97,6 @@ int main(int argc, char *argv[]) {
 
     filereader_t file;
     filereader_create(&file, fp);
-
-    if (create_success(cache_size, ways, block_size) != 0) {
-        filereader_destroy(&file);
-        return EXIT_FAILURE;
-    }
 
     char *line = NULL;
     while (filereader_next_line(&file, &line) != -1) {
@@ -120,10 +117,10 @@ int main(int argc, char *argv[]) {
         }
         executor_execute(&command, &output_file);
         command_destroy(&command);
-}
+    }
+    filereader_destroy(&file);
     cache_destroy();
     main_memory_destroy();
-    filereader_destroy(&file);
-
+    
     return EXIT_SUCCESS;
 }

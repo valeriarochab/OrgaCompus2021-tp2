@@ -16,6 +16,10 @@ void way_init(way_t *self) {
     self->old = 0;
 }
 
+void way_write_byte(way_t *self, unsigned int offset, char value) {
+    self->block[offset] = value;
+}
+
 void way_destroy(way_t *self) {
     free(self->block);
 }

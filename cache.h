@@ -7,7 +7,6 @@
 #include "stdio.h"
 #include "stdlib.h"
 
-
 typedef struct cache {
     int miss_counter;
     int last_hit;
@@ -19,9 +18,9 @@ typedef struct cache {
 int cache_create(unsigned int cache_size, unsigned int ways, unsigned int block_size);
 void cache_init();
 unsigned int find_earliest(int setnum);
-void read_block(int blocknum);
-char read_byte(int address, char *hit);
-char write_byte(int address, char value, char *hit);
+void cache_read_block(int blocknum);
+char cache_read_byte(unsigned int address);
+char cache_write_byte(unsigned int address, char value);
 char get_miss_rate();
 void cache_destroy();
 
