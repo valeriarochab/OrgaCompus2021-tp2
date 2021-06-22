@@ -4,7 +4,7 @@
 #define SPACE_ADDRESS 16
 #define KB_CONSTANT 1024
 
-typedef struct {
+typedef struct cache_params {
     int sets_amount;
     int block_size;
     int ways;

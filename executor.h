@@ -11,7 +11,7 @@ void executor_execute(command_t *command, filewriter_t* filewriter);
 void init(filewriter_t *fileWriter);
 char cache_get_miss_rate();
 void write_byte_tomem(int address, char value);
-char read_byte(int address, char *hit);
+char read_byte(int address, char *value, char *hit);
 char write_byte(int address, char value, char *hit);
 
 #endif //EXECUTOR_H

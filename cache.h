@@ -19,7 +19,7 @@ int cache_create(unsigned int cache_size, unsigned int ways, unsigned int block_
 void cache_init();
 unsigned int find_earliest(int setnum);
 void cache_read_block(int blocknum);
-char cache_read_byte(unsigned int address);
+char cache_read_byte(unsigned int address, char *value);
 char cache_write_byte(unsigned int address, char value);
 char get_miss_rate();
 void cache_destroy();

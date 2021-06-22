@@ -15,7 +15,17 @@ void executor_execute(command_t *command, filewriter_t *fileWriter) {
             init(fileWriter);
             break;
         case 'R':
-            read_byte(command->address, &hit);
+            {
+                unsigned char value;
+                read_byte(command->address, &value, &hit);
+                filewriter_write_char(fileWriter, "Se leyó el valor: ", 0);
+                filewriter_write_int(fileWriter, value, 0);
+            }
+            if (hit == 'H') {
+                filewriter_write_char(fileWriter, " - La operacion fue un hit", 1);
+            } else {
+                filewriter_write_char(fileWriter, " - La operacion fue un miss", 1);
+            }
             break;
         case 'W':
             write_byte(command->address, command->value, &hit);
@@ -38,8 +48,11 @@ void executor_execute(command_t *command, filewriter_t *fileWriter) {
     return get_miss_rate();
 }
 
-char read_byte(int address, char *hit) {
-    return 0; //TODO
+char read_byte(int address, char *value, char *hit) {
+    if (cache_read_byte(address, value) != 0) {
+        *hit = 'M';
+    }
+    return 0;
 }
 
 char write_byte(int address, char value, char *hit) {

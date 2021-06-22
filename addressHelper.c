@@ -9,11 +9,18 @@ unsigned int get_offset(unsigned int address) {
     return address % cache_params.block_size;
 }
 
-unsigned int find_set(int address) {
-    unsigned int mba = address / cache_params.block_size;
-    return mba % cache_params.sets_amount;
+unsigned int find_set(unsigned int address) {
+    return find_mba(address) % cache_params.sets_amount;
 }
 
-unsigned int find_set_by_blocknum(unsigned int blocknum) {
+unsigned int find_mba(unsigned int address) {
+    return address / cache_params.block_size;
+}
+
+unsigned int find_set_by_blocknum(int blocknum) {
+    return blocknum % cache_params.sets_amount;
+}
+
+unsigned int get_tag_by_blocknum(int blocknum) {
     return blocknum / cache_params.sets_amount;
 }

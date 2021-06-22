@@ -24,10 +24,9 @@ int cache_create(unsigned int cache_size, unsigned int ways, unsigned int block_
 }
 
 unsigned int find_earliest(int setnum) {
-    set_t set = cache.sets[setnum];
     unsigned int earliest = 0;
     for (unsigned int i = 1; i < cache_params.ways; ++i) {
-        earliest = set.ways[earliest].old < set.ways[i].old ? i : earliest;
+        earliest = cache.sets[setnum].ways[earliest].old < cache.sets[setnum].ways[i].old ? i : earliest;
     }
     return earliest;
 }
@@ -55,11 +54,29 @@ void cache_destroy() {
 }
 
 char cache_write_byte(unsigned int address, char value) {
-    cache.access_counter++;
+    ++cache.access_counter;
     unsigned int set_number = find_set(address);
     if (set_write_byte(&cache.sets[set_number], address, value) != 0) {
-        cache.miss_counter++;
+        ++cache.miss_counter;
         return -1;
     }
     return 0;
+}
+
+char cache_read_byte(unsigned int address, char *value) {
+    ++cache.access_counter;
+    unsigned int set_number = find_set(address);
+    if (set_read_byte(&cache.sets[set_number], address, value) != 0) {
+        ++cache.miss_counter;
+        cache_read_block(find_mba(address));
+        set_read_byte(&cache.sets[set_number], address, value);
+        return -1;
+    }
+    return 0;
+}
+
+void cache_read_block(int blocknum) {
+    unsigned int set_num = find_set_by_blocknum(blocknum);
+    unsigned int earliest = find_earliest(set_num);
+    set_read_block(&cache.sets[set_num], blocknum, earliest);
 }

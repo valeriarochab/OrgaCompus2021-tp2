@@ -32,3 +32,21 @@ int set_write_byte(set_t *self, int address, char value) {
     }
     return -1;
 }
+
+int set_read_byte(set_t *self, int address, char *value) {
+    unsigned int tag = get_tag(address);
+    for (int i = 0; i < cache_params.ways; ++i) {
+        if (self->ways[i].valid == 1 && self->ways[i].tag == tag) {
+            way_read_byte(&self->ways[i], get_offset(address), value);
+            return 0;
+        }
+    }
+    return -1;
+}
+
+void set_read_block(set_t *self, int blocknum, unsigned int way) {
+    for (int i = 0; i < cache_params.ways; ++i) {
+        ++self->ways[i].old;
+    }
+    way_read_block(&self->ways[way], blocknum);
+}
