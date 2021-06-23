@@ -37,3 +37,6 @@ echo "Test 9: 1 way, 16KB cache, 128B blockSize: "
 
 echo "Test 10: 1 way, 16KB cache, 128B blockSize: "
 ../tp2 -w 1 -c 16 -b 128 prueba5.mem
+
+echo "Test 11: 1 way, 16KB cache, 128B blockSize: "
+../tp2 -w 1 -c 16 -b 128 prueba-fail.mem
