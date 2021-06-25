@@ -24,8 +24,7 @@ int create_success(unsigned int cache_size, unsigned int ways, unsigned int bloc
 int main(int argc, char *argv[]) {
     int option = 0;
     int must_return = 0;
-    char prefix[50] = {0};
-    char *output_option = NULL;
+    char *output_file_name = NULL;
     unsigned int ways;
     unsigned int cache_size;
     unsigned int block_size;
@@ -56,7 +55,7 @@ int main(int argc, char *argv[]) {
                 return EXIT_SUCCESS;
                 break;
             case 'o':
-                strncpy(prefix, optarg, strlen(optarg));
+                output_file_name = optarg;
                 break;
             case 'w':
                 ways = strtol(optarg, NULL, 10);
@@ -79,17 +78,15 @@ int main(int argc, char *argv[]) {
     if (must_return || (optind + 1 != argc) || (cache_size * 1024) < block_size ) {
        return EXIT_FAILURE;
     }
-
-    if (output_option == NULL) {
-        output_option = "stdout";
+    
+    if (output_file_name == NULL) {
+        output_file_name = "stdout";
     }
 
     if (create_success(cache_size, ways, block_size) != 0) {
         return EXIT_FAILURE;
     }
 
-    filewriter_t output_file;
-    filewriter_create(&output_file, output_option);
     FILE *fp;
     fp = fopen(argv[optind++], "r");
     if (fp == NULL)
@@ -97,6 +94,9 @@ int main(int argc, char *argv[]) {
 
     filereader_t file;
     filereader_create(&file, fp);
+
+    filewriter_t output_file;
+    filewriter_create(&output_file, output_file_name);
 
     char *line = NULL;
     while (filereader_next_line(&file, &line) != -1) {
@@ -111,13 +111,14 @@ int main(int argc, char *argv[]) {
         filewriter_write_char(&output_file, line, 1);
 
         command_t command;
-        if (command_create(&command, line) != 0) {
+        if (command_create(&command, line, &output_file) != 0) {
             filewriter_write_char(&output_file, "Comando inválido.", 1);
             continue;
         }
         executor_execute(&command, &output_file);
         command_destroy(&command);
     }
+    filewriter_destroy(&output_file);
     filereader_destroy(&file);
     cache_destroy();
     main_memory_destroy();
